@@ -1,0 +1,26 @@
+[package]
+name = "canvas_page"
+version = "0.1.0"
+authors = ["ademi"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+wasm-bindgen = "0.2.45"
+js-sys = "0.3.26"
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+    'console',
+    'CanvasRenderingContext2d',
+    'Document',
+    'Element',
+    'HtmlCanvasElement',
+    'Window',
+    'CanvasRenderingContext2d',
+    'ImageData',
+    'Blob',
+]
+[lib]
+crate-type = ["cdylib"]

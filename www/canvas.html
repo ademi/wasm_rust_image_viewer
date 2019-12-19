@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas</title>
+    <style>
+        .container {
+          width: 60%;
+          height: 100%;
+          margin:auto;
+        }
+        .canvas{
+          margin: 0 auto 0 auto;
+          border: 1px solid black;
+          width: 1000px;
+          height: 800px;
+          }
+        .input-group-prepend{
+          display: block;
+          padding: 10px;
+          width: 100%;
+        }
+        .custom-file{
+          display: inline-block;
+          padding:10px;
+          width:70%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container" class="container">
+
+    <h1 style="margin:20px">Wasm / Rust Image Editor</h1>
+        
+    <div class="custom-file">+
+      <input type="file" class="custom-file-input" id="open_img" aria-describedby="inputGroupFileAddon01">
+    </div>
+        
+    <canvas id="canvas" class="canvas" widht="600px" height="600px"></canvas>
+    
+    </div>
+    <!-- Note the usage of `type=module` here as this is an ES6 module -->
+    <script src="index.js" type="module">
+    </script>
+</body>
+
+</html>
