@@ -5,7 +5,7 @@ use crate::modules::*;
 
 #[wasm_bindgen]
 pub struct Context{
-    buffer: Option<Buffer>,//<Vec<u8>>,
+    buffer: Option<Buffer>,
     frame: Frame,
 }
 
@@ -18,15 +18,12 @@ impl Context{
         }
     }
 
-    pub fn load_img(&mut self,pixels:JsValue,width:usize,height:usize,len:usize)->bool{
-        let mut buf:Vec<u8> = vec![0;len];
+    pub fn load_img(&mut self,pixels:JsValue,width:usize,height:usize,len:u32)->bool{
+        let mut buf:Vec<u8> = vec![0;len as usize];
         let js_buf = js_sys::Uint8Array::new(&pixels);
         
         // copy the js buffer into the wasm buffer
         js_buf.copy_to(&mut buf);
-        web_sys::console::log_2(&"loaded image successfully: ".into(),
-            &buf[0].into());
-        
         self.buffer=Some(Buffer::new(buf,width,height,4));
         true
     }
@@ -37,21 +34,20 @@ impl Context{
     pub fn clear_frame(&mut self){
         self.frame.clear();
     }
-    //pub fn draw(&mut self){
-        //self.frame.draw();
-    //}
+    pub fn frame_buffer(&mut self)-> *const u8{
+        self.frame.data()
+    }
+    pub fn refresh_frame(&mut self, x:usize,y:usize)->bool{
 
-    //pub fn view_img(&mut self,x:u32,y:u32)->bool{
-        //if x >= self.frame.width() || y >= self.frame.height() { return false}
-        //match self.buffer.as_mut(){
-            //Some(buf)=>{
-                //self.frame.put_img(&buf,x,y);
-                //return true
-            //}
-            //None => {
-                //web_sys::console::log_1(&"No image Found".into());
-                //return false
-            //}
-        //}        
-    //}
+        match
+            self.buffer.as_ref(){
+                Some(buf)=>{
+                    
+                    self.frame.draw(buf,x,y);
+                    true
+                },
+                None=> false,
+            }
+    }
+
 }

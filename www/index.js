@@ -1,21 +1,22 @@
 import init,{initialize_context,Context} from './canvas_page.js';
 'use strict';
 
-const viewer = {};
-async   function run(viewer){
+const view = {};
+async   function run(view){
     'use strict';
-    await init();
+    let wasm_handler = await init();
 
     function App(){
-        //this.wasm_handler = 
+
         this.zoom = 1.0;
 
         this.setup_canvas();
-        this.setupuploader();
-        
+        this.setuploader();
+        console.log(this.canvas.width,this.canvas.height);
         this.viewer =initialize_context(this.canvas.width,this.canvas.height);
+        
     }
-    App.prototype.setupuploader = function(){
+    App.prototype.setuploader = function(){
         document.getElementById('open_img')
             .addEventListener('change',this.openFile.bind(this),true);
 
@@ -25,7 +26,7 @@ async   function run(viewer){
         
         this.canvas.width = this.canvas.clientWidth;
         this.canvas.height= this.canvas.clientHeight;
-        this.canvas_ctx = this.canvas.getContext('2d');
+        //this.canvas_ctx = this.canvas.getContext('2d');
         
     }
     App.prototype.openFile=function(event){
@@ -45,9 +46,36 @@ async   function run(viewer){
             }
         
     }
-   App.prototype.refresh_frame=function(raw_img){
-       this.canvas_ctx.putImageData(raw_img,0,0); 
-   }
+    App.prototype.getindex = function(x,y,w,h){
+        return (y*w + x)*4;
+    }
+    App.prototype.refresh_frame=function(raw_img){
+        //this.canvas_ctx.putImageData(raw_img,0,0); 
+            let raw_buffer = new Uint8ClampedArray(
+                wasm_handler.memory.buffer,
+                this.viewer.frame_buffer(),
+                this.viewer.frame_len());
+        
+            let imgData = new ImageData(raw_buffer,this.viewer.frame_width(),this.viewer.frame_height());
+            for (let x =0, y=0 ;
+                    x < Math.min(raw_img.width,imgData.width) && 
+                    y < Math.min(raw_img.height,imgData.height) ;
+                    x++,y++){
+                let idx =this.getindex(x,y,
+                    Math.min(raw_img.width,imgData.width),
+                    Math.min(raw_img.height,imgData.height));
+
+                //for (let i =0;i<4;i++){
+                    //if(raw_img.data[idx+i]!= imgData.data[idx+i]){
+                    //console.log("difference: "+x+","+y+" : "
+                        //+raw_img.data[idx+i]+" , "+imgData.data[idx+i])
+                    //}
+                //}
+            }
+
+            let canvas_ctx = this.canvas.getContext('2d')
+            canvas_ctx.putImageData(imgData,0,0);
+    }
     App.prototype.loadImage = function(loadend_evt){
         const img = new Image();
         img.src = loadend_evt.target.result;
@@ -58,7 +86,7 @@ async   function run(viewer){
             cnvx.height = img.naturalHeight;
             cnvx_ctx.drawImage(img,0,0);
             const raw_img = cnvx_ctx.getImageData(0,0,img.naturalWidth,img.naturalHeight)
-            console.log(raw_img);
+           
             const did_load = this.viewer.load_img(
                 raw_img.data,
                 raw_img.width,
@@ -67,6 +95,7 @@ async   function run(viewer){
                 );
             
             if(did_load){
+                this.viewer.refresh_frame(0,0)
                 this.refresh_frame(raw_img)
             }
         }).bind(this);
@@ -74,4 +103,4 @@ async   function run(viewer){
 
     new App();
 }
-run(viewer);
+run(view);
