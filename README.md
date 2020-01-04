@@ -2,7 +2,7 @@
 
 This project serves as an example of how to use Rust language compiled into wasm to read and operate on images openned in internet browser.
 
-I haven't figured out yet how to work outh github.io hosting just yet. So you'll have to build the project on your machine for demonstartion. I promise I'll get to it asap.
+You can view this project in a desktop browser that supports WebAssembly here: https://ademi.github.io/wasm_rust_image_viewer/
 
 ## Building
 
